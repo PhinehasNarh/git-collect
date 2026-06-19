@@ -28,6 +28,16 @@ def _print_text(path: Path, findings: list[Finding]) -> None:
         print(f"{path}:{f.line}: [{f.severity}] {f.label} ({f.rule_id})")
 
 
+def _iter_files(path: Path):
+    """Yield files under ``path`` recursively, or ``path`` itself."""
+    if path.is_dir():
+        for child in sorted(path.rglob("*")):
+            if child.is_file():
+                yield child
+    else:
+        yield path
+
+
 def main(argv: list[str] | None = None) -> int:
     """Entry point. Returns a non-zero exit code when findings are present."""
     parser = argparse.ArgumentParser(
@@ -47,8 +57,8 @@ def main(argv: list[str] | None = None) -> int:
 
     results: dict[str, list[Finding]] = {}
     for raw in args.paths:
-        path = Path(raw)
-        results[str(path)] = _scan_path(path)
+        for target in _iter_files(Path(raw)):
+            results[str(target)] = _scan_path(target)
 
     threshold = severity_rank(args.severity_threshold)
     results = {
