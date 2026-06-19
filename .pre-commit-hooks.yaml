@@ -1,0 +1,6 @@
+- id: gitcollect
+  name: gitcollect secret scan
+  description: Scan staged files for credentials and hygiene issues.
+  entry: gitcollect
+  language: python
+  types: [text]
