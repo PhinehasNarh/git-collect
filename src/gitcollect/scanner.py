@@ -25,6 +25,12 @@ _RULES: list[tuple[str, str, str, re.Pattern[str]]] = [
         re.compile(r"\bgh[pousr]_[A-Za-z0-9]{36}\b|\bgithub_pat_[A-Za-z0-9_]{22,}\b"),
     ),
     (
+        "slack-webhook",
+        "Slack incoming webhook URL",
+        "medium",
+        re.compile(r"https://hooks\.slack\.com/services/[A-Za-z0-9/]+"),
+    ),
+    (
         "generic-secret-assignment",
         "Hardcoded secret assignment",
         "medium",
