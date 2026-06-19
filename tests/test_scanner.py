@@ -31,3 +31,9 @@ def test_reports_line_numbers():
 
 def test_severity_rank_orders_high_above_low():
     assert severity_rank("high") > severity_rank("medium") > severity_rank("low")
+
+
+def test_detects_github_pat():
+    # Token assembled at runtime so no literal credential lives in the repo.
+    findings = scan_text("token = ghp_" + "A" * 36)
+    assert any(f.rule_id == "github-pat" for f in findings)
