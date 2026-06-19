@@ -43,3 +43,8 @@ def test_scans_directory(tmp_path):
     (tmp_path / "a.txt").write_text('password = "supersecret"\n', encoding="utf-8")
     (tmp_path / "b.txt").write_text("clean code\n", encoding="utf-8")
     assert main([str(tmp_path)]) == 1
+
+
+def test_handles_crlf_line_endings(tmp_path):
+    path = _write(tmp_path, 'clean line\r\npassword = "supersecret"\r\n')
+    assert main([path]) == 1
