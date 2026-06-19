@@ -37,3 +37,8 @@ def test_detects_github_pat():
     # Token assembled at runtime so no literal credential lives in the repo.
     findings = scan_text("token = ghp_" + "A" * 36)
     assert any(f.rule_id == "github-pat" for f in findings)
+
+
+def test_detects_slack_webhook():
+    findings = scan_text("url = https://hooks.slack.com/services/T000/B000/XXXXXXXXXXXX")
+    assert any(f.rule_id == "slack-webhook" for f in findings)
