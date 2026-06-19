@@ -1,0 +1,31 @@
+"""Tests for the gitcollect CLI."""
+
+import json
+
+from gitcollect.cli import main
+
+
+def _write(tmp_path, content):
+    p = tmp_path / "sample.txt"
+    p.write_text(content, encoding="utf-8")
+    return str(p)
+
+
+def test_clean_file_returns_zero(tmp_path, capsys):
+    path = _write(tmp_path, "def add(a, b):\n    return a + b\n")
+    assert main([path]) == 0
+    assert "No findings" in capsys.readouterr().out
+
+
+def test_finding_returns_one(tmp_path):
+    path = _write(tmp_path, 'password = "supersecret"\n')
+    assert main([path]) == 1
+
+
+def test_json_output_is_valid(tmp_path, capsys):
+    path = _write(tmp_path, 'password = "supersecret"\n')
+    rc = main(["--json", path])
+    data = json.loads(capsys.readouterr().out)
+    assert rc == 1
+    assert data["total"] == 1
+    assert data["findings"][0]["rule_id"] == "generic-secret-assignment"
