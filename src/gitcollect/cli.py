@@ -36,6 +36,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("paths", nargs="+", help="Files to scan.")
     parser.add_argument("--json", action="store_true", help="Emit findings as JSON.")
+    parser.add_argument(
+        "--severity-threshold",
+        choices=["low", "medium", "high"],
+        default="low",
+        help="Only report findings at or above this severity.",
+    )
     parser.add_argument("--version", action="version", version=f"gitcollect {__version__}")
     args = parser.parse_args(argv)
 
@@ -43,6 +49,12 @@ def main(argv: list[str] | None = None) -> int:
     for raw in args.paths:
         path = Path(raw)
         results[str(path)] = _scan_path(path)
+
+    threshold = severity_rank(args.severity_threshold)
+    results = {
+        p: [f for f in fs if severity_rank(f.severity) >= threshold]
+        for p, fs in results.items()
+    }
 
     total = sum(len(v) for v in results.values())
 

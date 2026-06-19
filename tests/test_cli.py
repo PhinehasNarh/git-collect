@@ -29,3 +29,11 @@ def test_json_output_is_valid(tmp_path, capsys):
     assert rc == 1
     assert data["total"] == 1
     assert data["findings"][0]["rule_id"] == "generic-secret-assignment"
+
+
+def test_severity_threshold_filters(tmp_path, capsys):
+    path = _write(tmp_path, 'password = "supersecret"\n')
+    rc = main(["--json", "--severity-threshold", "high", path])
+    data = json.loads(capsys.readouterr().out)
+    assert data["total"] == 0
+    assert rc == 0
