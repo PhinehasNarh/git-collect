@@ -37,3 +37,9 @@ def test_severity_threshold_filters(tmp_path, capsys):
     data = json.loads(capsys.readouterr().out)
     assert data["total"] == 0
     assert rc == 0
+
+
+def test_scans_directory(tmp_path):
+    (tmp_path / "a.txt").write_text('password = "supersecret"\n', encoding="utf-8")
+    (tmp_path / "b.txt").write_text("clean code\n", encoding="utf-8")
+    assert main([str(tmp_path)]) == 1
