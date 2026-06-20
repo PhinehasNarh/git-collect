@@ -46,6 +46,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("paths", nargs="+", help="Files to scan.")
     parser.add_argument("--json", action="store_true", help="Emit findings as JSON.")
+    parser.add_argument("--sarif", action="store_true", help="Emit findings as SARIF.")
     parser.add_argument(
         "--severity-threshold",
         choices=["low", "medium", "high"],
@@ -67,6 +68,37 @@ def main(argv: list[str] | None = None) -> int:
     }
 
     total = sum(len(v) for v in results.values())
+
+    if args.sarif:
+        levels = {"high": "error", "medium": "warning", "low": "note"}
+        sarif = {
+            "version": "2.1.0",
+            "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+            "runs": [
+                {
+                    "tool": {"driver": {"name": "gitcollect"}},
+                    "results": [
+                        {
+                            "ruleId": f.rule_id,
+                            "level": levels[f.severity],
+                            "message": {"text": f.label},
+                            "locations": [
+                                {
+                                    "physicalLocation": {
+                                        "artifactLocation": {"uri": p},
+                                        "region": {"startLine": f.line},
+                                    }
+                                }
+                            ],
+                        }
+                        for p, fs in results.items()
+                        for f in fs
+                    ],
+                }
+            ],
+        }
+        print(json.dumps(sarif, indent=2))
+        return 1 if total else 0
 
     if args.json:
         payload = {
