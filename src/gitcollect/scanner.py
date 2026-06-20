@@ -92,3 +92,25 @@ def scan_text(text: str) -> list[Finding]:
 def severity_rank(severity: str) -> int:
     """Return a sortable rank for a severity string (higher is worse)."""
     return {"low": 1, "medium": 2, "high": 3}.get(severity, 0)
+
+
+def shannon_entropy(value: str) -> float:
+    """Return the Shannon entropy (bits per character) of ``value``."""
+    if not value:
+        return 0.0
+    from collections import Counter
+    from math import log2
+
+    length = len(value)
+    return -sum((n / length) * log2(n / length) for n in Counter(value).values())
+
+
+def find_high_entropy_tokens(
+    text: str, min_length: int = 20, threshold: float = 4.0
+) -> list[str]:
+    """Return whitespace-delimited tokens that look like high-entropy secrets."""
+    return [
+        token
+        for token in text.split()
+        if len(token) >= min_length and shannon_entropy(token) >= threshold
+    ]
