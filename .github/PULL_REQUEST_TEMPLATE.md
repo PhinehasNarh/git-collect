@@ -1,6 +1,5 @@
 <!--
-Keep PRs small and focused. Small PRs review faster and merge faster, which
-also happens to be the cleanest path to Pull Shark progress.
+Keep PRs small and focused. Small, single-purpose PRs are easier to review.
 -->
 
 ## Summary
