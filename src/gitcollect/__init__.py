@@ -2,6 +2,6 @@
 
 __version__ = "0.1.0"
 
-from gitcollect.scanner import Finding, scan_text
+from gitcollect.scanner import Finding, scan_lines, scan_text
 
-__all__ = ["Finding", "scan_text", "__version__"]
+__all__ = ["Finding", "scan_lines", "scan_text", "__version__"]
